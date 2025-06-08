@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install -y git python3-dev python3-pip zsh zsh-autosuggestions zsh-syntax-highlighting nano htop python3-vcstool
+sudo apt install -y git python3-dev python3-pip zsh zsh-autosuggestions zsh-syntax-highlighting nano htop
 
 chsh -s $(which zsh)
 sudo chmod 777 ./setup.sh
