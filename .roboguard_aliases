@@ -27,6 +27,7 @@ ROBOGUARD_SRC_PATH="$ROBOGUARD_WS_PATH/src"
 ROBOGUARD_INSTALL_PATH="$ROBOGUARD_WS_PATH/install"
 ROBOGUARD_BUILD_PATH="$ROBOGUARD_WS_PATH/build"
 ROBOGUARD_SETUP_PATH="$ROBOGUARD_INSTALL_PATH/setup$SHELL_EXT"
+ROBOGUARD_ODRIVE_PATH="~/odrive-config"
 
 # Ros ID
 export ROS_DOMAIN_ID=96
@@ -42,7 +43,7 @@ else
     if [[ -f "$ROS_SETUP_PATH" ]]; then
         . $ROS_SETUP_PATH
         echo Sourced $ROS_SETUP_PATH instead!
-        echo Dont forget to roboguardsrc after you roboguardbuild
+        echo Dont forget to rgsrc after you rgbuild
     else
         echo Ros not installed yet. Follow instructions at https://wiki.capra.etsmtl.ca/en/projets/roboguard/configuration
     fi
@@ -54,51 +55,54 @@ eval "$(register-python-argcomplete3 colcon)"
 eval "$(register-python-argcomplete3 rosdep)"
 source /usr/share/vcstool-completion/vcs.zsh
 
-echo Use roboguardhelp for a list of aliases!
+echo Use rghelp for a list of aliases!
 
 # ======== Aliases ========
 
 # -------- CD commands --------
 
-# CD to the workspace (also corresponds to the root of the roboguard repo)
-alias roboguardcdws="cd $ROBOGUARD_WS_PATH; echo 'Changed directory to $ROBOGUARD_WS_PATH'"
+# CD to the workspace (also corresponds to the root of the roboguard_pi repo)
+alias rgcdws="cd $ROBOGUARD_WS_PATH; echo 'Changed directory to $ROBOGUARD_WS_PATH'"
 
 # CD to the src directory
-alias roboguardcdsrc="cd $ROBOGUARD_SRC_PATH; echo 'CHANGED directory to $ROBOGUARD_SRC_PATH'"
+alias rgcdsrc="cd $ROBOGUARD_SRC_PATH; echo 'CHANGED directory to $ROBOGUARD_SRC_PATH'"
 
 # -------- Build commands --------
 
-# Build the roboguard workspace (will cd to $ROBOGUARD_WS_PATH)
-alias roboguardbuild="roboguardcdws; echo 'Building roboguard'; colcon build --symlink-install"
+# Build the roboguard_pi workspace (will cd to $ROBOGUARD_WS_PATH)
+alias rgbuild="rgcdws; echo 'Building roboguard'; colcon build --symlink-install"
 
 # Clean the install and build directories
-alias roboguardclean="echo 'Deleting $ROBOGUARD_BUILD_PATH'; rm -rf $ROBOGUARD_BUILD_PATH; echo 'Done'; echo 'Deleting $ROBOGUARD_INSTALL_PATH'; rm -rf $ROBOGUARD_INSTALL_PATH; echo 'Done'"
+alias rgclean="echo 'Deleting $ROBOGUARD_BUILD_PATH'; rm -rf $ROBOGUARD_BUILD_PATH; echo 'Done'; echo 'Deleting $ROBOGUARD_INSTALL_PATH'; rm -rf $ROBOGUARD_INSTALL_PATH; echo 'Done'"
 
 # Clean and build
-alias roboguardrebuild="roboguardclean; roboguardbuild"
+alias rgrebuild="rgclean; rgbuild"
 
 # -------- Utilities --------
 
 # Import VCS
-alias roboguardvcs="roboguardcdws; echo 'Importing vcs'; vcs import src < roboguard.repos; echo 'Done'"
+alias rgvcs="rgcdws; echo 'Importing vcs'; vcs import src < roboguard.repos; echo 'Done'"
 
 # Install roboguards deps (using rosdep)
-alias roboguarddep="roboguardcd; echo 'Installing deps'; rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -r -y; echo 'Done'"
+alias rgdep="rgcd; echo 'Installing deps'; rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -r -y; echo 'Done'"
 
-# Source roboguard workspace
-alias roboguardsrc="echo 'Sourcing $ROBOGUARD_SETUP_PATH'; . $ROBOGUARD_SETUP_PATH; echo 'Done'; eval '$(register-python-argcomplete3 ros2)'; eval '$(register-python-argcomplete3 colcon)'; eval '$(register-python-argcomplete3 rosdeps)'; eval '$(register-python-argcomplete3 rosdep)'"
+# Source roboguard_pi workspace
+alias rgsrc="echo 'Sourcing $ROBOGUARD_SETUP_PATH'; . $ROBOGUARD_SETUP_PATH; echo 'Done'; eval '$(register-python-argcomplete3 ros2)'; eval '$(register-python-argcomplete3 colcon)'; eval '$(register-python-argcomplete3 rosdeps)'; eval '$(register-python-argcomplete3 rosdep)'"
 
 # Can aliases
 # Setup can for odrives
-alias roboguardcanup="echo 'Starting canbus'; sudo ip link set can0 type can bitrate 500000; sudo ifconfig can0 txqueuelen 1000; sudo ip link set can0 up; echo 'Done'"
+alias rgcanup="echo 'Starting canbus'; sudo ip link set can0 type can bitrate 500000; sudo ifconfig can0 txqueuelen 1000; sudo ip link set can0 up; echo 'Done'"
 
 # Set can interface down
-alias roboguardcandown="echo 'Setting can0 to down'; sudo ip link set can0 down; echo 'Done'"
+alias rgcandown="echo 'Setting can0 to down'; sudo ip link set can0 down; echo 'Done'"
 
 # Set can interface down
-alias roboguardcanrestart="roboguardcandown; roboguardcanup"
+alias rgcanrestart="rgcandown; rgcanup"
+
+# Start odrive script
+alias rgodriverun="cd $ROBOGUARD_ODRIVE_PATH; rgcanrestart; if [[ $(invenv) -eq 0 ]]; then . $ROBOGUARD_ODRIVE_PATH/venv/bin/activate; fi; python3 $ROBOGUARD_ODRIVE_PATH/run.py"
 
 # Show help
-alias roboguardhelp="sed -n '/Aliases/,/end/p;/end/q' <~/.roboguard_aliases"
+alias rghelp="sed -n '/Aliases/,/end/p;/end/q' <~/.roboguard_aliases"
 
 # end

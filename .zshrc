@@ -129,3 +129,9 @@ function editzsh() {
     fi
 }
 
+function invenv() {
+    # From: https://stackoverflow.com/questions/15454174/how-can-a-shell-function-know-if-it-is-running-within-a-virtualenv
+    INVENV=$(python3 -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
+    echo $INVENV
+}
+
